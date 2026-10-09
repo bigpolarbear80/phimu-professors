@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Phi Mu Professor Reviews
 
-## Getting Started
+A password-protected, Rate-My-Professors-style site for a Phi Mu chapter. Reviews live in the
+chapter's Notion workspace (a submission form feeds them in, she approves them in Notion), and this
+site reads them through the Notion API.
 
-First, run the development server:
+**Stack:** Next.js 16 (App Router, Cache Components), Tailwind v4, no database of our own.
+
+## What it does
+
+| Page | Route | Notes |
+| --- | --- | --- |
+| Directory | `/` | Search by professor name or course code (`ACCT 201`, `acct201`, `acct-201` all work). Filter by college and department. Sort by name, rating, review count. |
+| Professor profile | `/professors/[slug]` | Average rating, % would take again, average difficulty, review count, and every **approved** review. |
+| Updates & Resources | `/updates` | Posts she writes in a Notion database: important dates, links, announcements. Pinned items float to the top. |
+| Login | `/login` | One shared password for the whole site. Session lasts 30 days. |
+
+Everything is behind the password except `/login`. Notion data is cached for one minute, so a newly
+approved review shows up within about a minute without a redeploy.
+
+## Running it locally
 
 ```bash
+npm install
+cp .env.example .env.local   # then edit it
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+With no `NOTION_TOKEN` set the site runs on built-in sample data (`src/lib/mock-data.ts`), so you can
+develop and demo without her workspace. The dev password in `.env.local` is whatever you set for
+`SITE_PASSWORD`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Going live checklist
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Notion access.** Follow [docs/NOTION-SETUP.md](docs/NOTION-SETUP.md). You end up with a token and
+   three database IDs for `.env.local` (and the host's environment variables).
+2. **Match the column names.** Open `src/lib/config.ts` and make `notionSchema` match her actual
+   property names. The readers are tolerant of property *types*, but the *names* must match.
+3. **Logo.** Replace `public/logo.svg` with her file (or change `site.logoPath`). Then tune the
+   colour tokens at the top of `src/app/globals.css` to match it.
+4. **Password + secret.** Set `SITE_PASSWORD` to whatever she wants to hand out, and `SESSION_SECRET`
+   to `openssl rand -hex 32`.
+5. **Submission form link.** Set `NEXT_PUBLIC_SUBMIT_REVIEW_URL` to her Notion form URL to show a
+   "Submit a review" button on the directory.
+6. **Deploy.** See [docs/HOSTING-AND-DOMAIN.md](docs/HOSTING-AND-DOMAIN.md).
 
-## Learn More
+## Project layout
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+  proxy.ts                 password gate (runs before every page)
+  lib/
+    config.ts              site name, logo path, Notion column names  <- edit this first
+    data.ts                cached data layer: getProfessors / getProfessorBySlug / getUpdates
+    notion.ts              tiny Notion REST client + tolerant property readers
+    mock-data.ts           sample data used when Notion isn't configured
+    auth.ts                cookie signing / password check
+  app/
+    login/                 login page + form
+    api/login, api/logout  set / clear the session cookie
+    (site)/                everything behind the password (shared header)
+      page.tsx             directory
+      professors/[slug]/   profile
+      updates/             updates & resources
+  components/              UI pieces
+docs/                      Notion setup, hosting + domain explainer, call notes
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Useful commands
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run dev      # local dev at http://localhost:3000
+npm run build    # production build (also validates caching/Suspense rules)
+npm run lint
+npx tsc --noEmit
+```
