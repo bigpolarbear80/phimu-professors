@@ -59,17 +59,20 @@ async function ProfessorDetail({ params }: { params: PageProps<"/professors/[slu
         </div>
       </div>
 
-      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className={`mt-6 grid grid-cols-2 gap-3 ${stats.averageDifficulty == null ? "sm:grid-cols-3" : "sm:grid-cols-4"}`}>
         <StatBlock label="Reviews" value={String(stats.reviewCount)} />
         <StatBlock
           label="Would take again"
           value={stats.wouldTakeAgainPercent == null ? "–" : `${stats.wouldTakeAgainPercent}%`}
+          hint="counts only “Yes” answers"
         />
-        <StatBlock
-          label="Difficulty"
-          value={stats.averageDifficulty == null ? "–" : `${stats.averageDifficulty.toFixed(1)}/5`}
-          hint="1 easy · 5 hard"
-        />
+        {stats.averageDifficulty != null && (
+          <StatBlock
+            label="Difficulty"
+            value={`${stats.averageDifficulty.toFixed(1)}/5`}
+            hint="1 easy · 5 hard"
+          />
+        )}
         <StatBlock label="Courses" value={String(prof.courses.length)} />
       </div>
 
