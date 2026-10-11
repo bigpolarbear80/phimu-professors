@@ -21,7 +21,7 @@ reviews in). The third is a small new one for the updates page.
 | --- | --- | --- |
 | Professor Database | `3ab81544dae280baa5a4d473b5dca55a` | child of the "Phi Mu Professor Reviews" page |
 | Reviews | `39e81544dae28027ae1ff9793809225f` | has views All / Pending / Approved |
-| Updates | (not created yet) | new database to add for the Updates page |
+| Updates | `3f681544dae28099a61affb1bcb9d2f9` | created 2026-10-11 in the "Phi Mu's Space HQ" teamspace |
 
 Reviews come in through a Tally form (https://tally.so/r/WO6Z4e) with: Professor Name, Course Number,
 Department, College, Rating 1-5, Would you take again (Yes/Maybe/No), Written Review. Tally writes a row
