@@ -30,6 +30,11 @@ export const notionSchema = {
     courses: "Courses",           // (not present in her DB; courses come from reviews)
     bio: "Notes",                 // (optional, not present yet)
     email: "Email",               // (optional, not present yet)
+    // Rollups on her Professor Database. Only used as a fallback when the
+    // Reviews database can't be read (e.g. the connection lacks access).
+    rollupAverage: "Average Rating",
+    rollupCount: "Number of Reviews",
+    rollupWouldTakeAgain: "Would Take Again?",
   },
   reviews: {
     professor: "Professor Database", // relation -> Professors (falls back to the first relation property)

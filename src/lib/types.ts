@@ -20,6 +20,8 @@ export type Professor = {
   courses: string[];
   bio: string;
   email: string;
+  /** Stats from Notion rollups, used when the Reviews database itself isn't reachable. */
+  rollupStats?: ProfessorStats;
 };
 
 export type ProfessorStats = {

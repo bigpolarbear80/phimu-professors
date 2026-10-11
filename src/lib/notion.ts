@@ -71,13 +71,16 @@ export async function queryAll(
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Prop = any;
 
+/** "📚Department " -> "department": ignore emoji, punctuation, spacing and case. */
+function normKey(s: string) {
+  return s.toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
+}
+
 function prop(page: NotionPage, name: string): Prop | undefined {
   if (!name) return undefined;
   if (page.properties[name]) return page.properties[name];
-  // case-insensitive fallback so "Would take again" still matches
-  const key = Object.keys(page.properties).find(
-    (k) => k.toLowerCase() === name.toLowerCase(),
-  );
+  const want = normKey(name);
+  const key = Object.keys(page.properties).find((k) => normKey(k) === want);
   return key ? page.properties[key] : undefined;
 }
 
@@ -125,6 +128,11 @@ export function readList(page: NotionPage, name: string): string[] {
   const p = prop(page, name);
   if (!p) return [];
   if (p.type === "multi_select") return (p.multi_select ?? []).map((s: Prop) => s.name);
+  if (p.type === "rollup" && p.rollup?.type === "array") {
+    return (p.rollup.array ?? [])
+      .map((x: Prop) => readText({ id: "", properties: { x } }, "x"))
+      .filter(Boolean);
+  }
   return readText(page, name)
     .split(/[,;\n]/)
     .map((s) => s.trim())

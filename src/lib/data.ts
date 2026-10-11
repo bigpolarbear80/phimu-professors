@@ -38,6 +38,9 @@ async function loadProfessors(): Promise<Professor[]> {
       const base = slugify(name) || normalizeId(page.id).slice(0, 8);
       const n = seen.get(base) ?? 0;
       seen.set(base, n + 1);
+      const rollupCount = readNumber(page, s.rollupCount);
+      const wta = readList(page, s.rollupWouldTakeAgain).map((v) => v.trim().toLowerCase());
+      const wtaAnswered = wta.filter((v) => ["yes", "no", "maybe"].includes(v));
       return {
         id: normalizeId(page.id),
         slug: n === 0 ? base : `${base}-${normalizeId(page.id).slice(0, 6)}`,
@@ -47,6 +50,17 @@ async function loadProfessors(): Promise<Professor[]> {
         courses: readList(page, s.courses).map(normalizeCourse),
         bio: readText(page, s.bio),
         email: readText(page, s.email),
+        rollupStats:
+          rollupCount && rollupCount > 0
+            ? {
+                reviewCount: rollupCount,
+                averageRating: readNumber(page, s.rollupAverage),
+                averageDifficulty: null,
+                wouldTakeAgainPercent: wtaAnswered.length
+                  ? Math.round((100 * wtaAnswered.filter((v) => v === "yes").length) / wtaAnswered.length)
+                  : null,
+              }
+            : undefined,
       };
     })
     .filter((p) => p.name);
@@ -54,6 +68,7 @@ async function loadProfessors(): Promise<Professor[]> {
 
 async function loadReviews(): Promise<Review[]> {
   if (isMockMode()) return mockReviews;
+  if (!process.env.NOTION_REVIEWS_DB) return [];
   const s = notionSchema.reviews;
   // Only approved rows ever leave Notion. If the Status column is a "status"
   // type instead of "select", swap the filter key below.
@@ -63,7 +78,15 @@ async function loadReviews(): Promise<Review[]> {
       : s.statusType === "status"
         ? { property: s.status, status: { equals: s.approvedValue } }
         : { property: s.status, select: { equals: s.approvedValue } };
-  const pages: NotionPage[] = await queryAll(process.env.NOTION_REVIEWS_DB!, filter);
+  let pages: NotionPage[];
+  try {
+    pages = await queryAll(process.env.NOTION_REVIEWS_DB, filter);
+  } catch (err) {
+    // Most likely the connection hasn't been given access to the Reviews
+    // database yet. Degrade to the Professor Database rollups instead of 500ing.
+    console.error("[notion] Reviews database unavailable, using rollups:", (err as Error).message);
+    return [];
+  }
   return pages
     .map((page): Review | null => {
       const professorId = readRelationIds(page, s.professor)[0];
@@ -120,7 +143,8 @@ export async function getProfessors(): Promise<ProfessorWithStats[]> {
     .map((p) => {
       const rs = byProf.get(p.id) ?? [];
       const courses = new Set([...p.courses, ...rs.map((r) => r.course).filter(Boolean)]);
-      return { ...p, courses: [...courses].sort(), stats: computeStats(rs) };
+      const stats = rs.length === 0 && p.rollupStats ? p.rollupStats : computeStats(rs);
+      return { ...p, courses: [...courses].sort(), stats };
     })
     .sort((a, b) => a.name.localeCompare(b.name));
 }
