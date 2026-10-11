@@ -57,16 +57,13 @@ async function loadReviews(): Promise<Review[]> {
   const s = notionSchema.reviews;
   // Only approved rows ever leave Notion. If the Status column is a "status"
   // type instead of "select", swap the filter key below.
-  const filter = { property: s.status, select: { equals: s.approvedValue } };
-  let pages: NotionPage[];
-  try {
-    pages = await queryAll(process.env.NOTION_REVIEWS_DB!, filter);
-  } catch {
-    pages = await queryAll(process.env.NOTION_REVIEWS_DB!, {
-      property: s.status,
-      status: { equals: s.approvedValue },
-    });
-  }
+  const filter =
+    s.statusType === "checkbox"
+      ? { property: s.status, checkbox: { equals: true } }
+      : s.statusType === "status"
+        ? { property: s.status, status: { equals: s.approvedValue } }
+        : { property: s.status, select: { equals: s.approvedValue } };
+  const pages: NotionPage[] = await queryAll(process.env.NOTION_REVIEWS_DB!, filter);
   return pages
     .map((page): Review | null => {
       const professorId = readRelationIds(page, s.professor)[0];
@@ -79,9 +76,10 @@ async function loadReviews(): Promise<Review[]> {
         rating: clamp(rating, 1, 5),
         difficulty: clampOrNull(readNumber(page, s.difficulty)),
         wouldTakeAgain: readBool(page, s.wouldTakeAgain),
+        wouldTakeAgainLabel: readText(page, s.wouldTakeAgain),
         comment: readText(page, s.comment),
         semester: readText(page, s.semester),
-        submittedAt: readDate(page, s.submitted),
+        submittedAt: readDate(page, s.submitted) ?? page.created_time?.slice(0, 10) ?? null,
       };
     })
     .filter((r): r is Review => r !== null);

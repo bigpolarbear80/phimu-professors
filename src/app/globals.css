@@ -2,17 +2,18 @@
 
 /* Brand tokens. Swap these once the logo arrives so the site matches it. */
 :root {
-  --rose-900: #6e2240;
-  --rose-700: #a6365d;
-  --rose-600: #c9476f;
-  --rose-500: #e0668c;
-  --rose-300: #f4a7bd;
-  --rose-100: #fbe9ef;
-  --rose-50: #fdf5f8;
-  --ink: #2b2024;
-  --muted: #7a6a70;
-  --line: #efdbe2;
-  --paper: #fffafc;
+  /* Pulled from the Phi Mu Academics logo: deep burgundy on warm cream. */
+  --rose-900: #5e1a26;
+  --rose-700: #7f2532;
+  --rose-600: #9a3140;
+  --rose-500: #b4505c;
+  --rose-300: #d9a3aa;
+  --rose-100: #f3e3e5;
+  --rose-50: #faf3f3;
+  --ink: #2a1f21;
+  --muted: #7a6467;
+  --line: #ecdcde;
+  --paper: #fefdf9;
   --card: #ffffff;
 }
 

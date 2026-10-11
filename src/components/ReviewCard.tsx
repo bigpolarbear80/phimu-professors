@@ -11,9 +11,9 @@ export function ReviewCard({ review: r }: { review: Review }) {
         </div>
         <div className="flex items-center gap-3 text-xs text-muted">
           {r.difficulty != null && <span>Difficulty {r.difficulty}/5</span>}
-          {r.wouldTakeAgain != null && (
+          {r.wouldTakeAgainLabel && (
             <span className={r.wouldTakeAgain ? "text-rose-700" : ""}>
-              {r.wouldTakeAgain ? "Would take again" : "Would not take again"}
+              Would take again: {r.wouldTakeAgainLabel}
             </span>
           )}
         </div>

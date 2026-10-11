@@ -32,7 +32,7 @@ const r = (
   semester: string,
   comment: string,
   submittedAt: string,
-): Review => ({ id, professorId, course, rating, difficulty, wouldTakeAgain, comment, semester, submittedAt });
+): Review => ({ id, professorId, course, rating, difficulty, wouldTakeAgain, wouldTakeAgainLabel: wouldTakeAgain ? "Yes" : "No", comment, semester, submittedAt });
 
 export const mockReviews: Review[] = [
   r("r1", "p1", "ACCT 201", 5, 3, true, "Fall 2025", "Genuinely the best intro accounting teacher. Her study guides are basically the exam. Go to office hours, she will walk you through anything.", "2025-12-10"),

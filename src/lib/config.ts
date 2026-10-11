@@ -4,13 +4,13 @@
  */
 
 export const site = {
-  name: "Phi Mu Professor Reviews",
-  shortName: "Phi Mu Reviews",
-  tagline: "Sister-sourced reviews of professors and courses.",
+  name: "Phi Mu Academics",
+  shortName: "Phi Mu Academics",
+  tagline: "Professor and course reviews by Phi Mu sisters, for Phi Mu sisters.",
   /** Drop the real logo at public/logo.svg (or .png and update this path). */
-  logoPath: "/logo.svg",
+  logoPath: "/logo-small.png",
   /** Where she posts new reviews. Shown as a button on the directory page. */
-  submitReviewUrl: process.env.NEXT_PUBLIC_SUBMIT_REVIEW_URL ?? "",
+  submitReviewUrl: process.env.NEXT_PUBLIC_SUBMIT_REVIEW_URL ?? "https://tally.so/r/WO6Z4e",
   /** Name of the login cookie. */
   sessionCookie: "pm_session",
   /** How long a login lasts, in seconds (30 days). */
@@ -25,23 +25,25 @@ export const site = {
 export const notionSchema = {
   professors: {
     name: "Name",                 // title
-    college: "College",           // select | multi_select | rich_text | relation(title)
-    department: "Department",     // select | multi_select | rich_text | relation(title)
-    courses: "Courses",           // multi_select | rich_text ("ACCT 201, ACCT 202") | relation
-    bio: "Notes",                 // rich_text (optional)
-    email: "Email",               // email | rich_text (optional)
+    college: "College",           // select
+    department: "Department",     // select
+    courses: "Courses",           // (not present in her DB; courses come from reviews)
+    bio: "Notes",                 // (optional, not present yet)
+    email: "Email",               // (optional, not present yet)
   },
   reviews: {
-    professor: "Professor",       // relation -> Professors
-    course: "Course",             // rich_text | select | relation(title)
-    rating: "Rating",             // number (1-5) | select ("5") | formula
-    difficulty: "Difficulty",     // number (1-5) (optional)
-    wouldTakeAgain: "Would Take Again", // checkbox | select ("Yes"/"No") | formula
-    comment: "Review",            // rich_text | title
-    semester: "Semester",         // rich_text | select (optional, e.g. "Fall 2025")
-    status: "Status",             // select | status  -> must equal approvedValue
-    approvedValue: "Approved",
-    submitted: "Submitted",       // created_time | date (optional)
+    professor: "Professor Database", // relation -> Professors (falls back to the first relation property)
+    course: "Course",             // rich_text, e.g. "HIST 307"
+    rating: "Rating",             // number 1-5
+    difficulty: "Difficulty",     // (not present; shown only if added later)
+    wouldTakeAgain: "Would Take Again", // select: Yes / Maybe / No
+    comment: "Review",            // rich_text
+    semester: "Semester",         // (not present; shown only if added later)
+    /** Approval gate: only rows where this checkbox is ticked are published. */
+    status: "Approved",           // checkbox
+    statusType: "checkbox" as "checkbox" | "select" | "status",
+    approvedValue: "Approved",    // only used when statusType is select/status
+    submitted: "Submitted",       // (not present; falls back to the page's created time)
   },
   updates: {
     title: "Name",                // title

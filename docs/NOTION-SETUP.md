@@ -15,7 +15,31 @@ reviews in). The third is a small new one for the updates page.
 4. Grab each database ID: the 32-character hex string in the URL before the `?v=`.
    `https://www.notion.so/<workspace>/<DATABASE_ID>?v=...` → that's `NOTION_PROFESSORS_DB` etc.
 
-## 2. Expected databases
+## 2. Her actual databases (confirmed 2026-10-11)
+
+| Database | ID | Where |
+| --- | --- | --- |
+| Professor Database | `3ab81544dae280baa5a4d473b5dca55a` | child of the "Phi Mu Professor Reviews" page |
+| Reviews | `39e81544dae28027ae1ff9793809225f` | has views All / Pending / Approved |
+| Updates | (not created yet) | new database to add for the Updates page |
+
+Reviews come in through a Tally form (https://tally.so/r/WO6Z4e) with: Professor Name, Course Number,
+Department, College, Rating 1-5, Would you take again (Yes/Maybe/No), Written Review. Tally writes a row
+into **Reviews**; she ticks **Approved** to publish it.
+
+**Professor Database columns:** Name (title), Department (select), College (select), plus rollups
+(Average Rating, Number of Reviews, Would Take Again?, Rating) and a `Reviews` relation. We ignore the
+rollups and compute stats ourselves.
+
+**Reviews columns:** Professor Name (title), Major Category (select = college), Department (select),
+Course (text, e.g. `HIST 307`), Rating (number), Would Take Again (select Yes/Maybe/No), Review (text),
+Approved (checkbox), Professor Database (relation -> Professor Database), Average Rating, Reviews
+(unused).
+
+`src/lib/config.ts` is already set to these names. "Maybe" counts as not-yes in the % would take again
+figure, and the Yes/Maybe/No label is shown on each review.
+
+## 2b. Generic reference (what the readers accept)
 
 Column names are configurable in `src/lib/config.ts` (`notionSchema`). Types listed are what the
 reader understands; the first is the recommended one.

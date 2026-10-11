@@ -4,7 +4,8 @@ export type Review = {
   course: string;
   rating: number; // 1-5
   difficulty: number | null; // 1-5
-  wouldTakeAgain: boolean | null;
+  wouldTakeAgain: boolean | null; // Yes => true, No/Maybe => false
+  wouldTakeAgainLabel: string; // "Yes" | "Maybe" | "No" | ""
   comment: string;
   semester: string;
   submittedAt: string | null; // ISO date

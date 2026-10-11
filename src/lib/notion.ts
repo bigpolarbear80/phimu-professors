@@ -8,7 +8,7 @@ const NOTION_VERSION = "2022-06-28";
 const BASE = "https://api.notion.com/v1";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type NotionPage = { id: string; properties: Record<string, any> };
+export type NotionPage = { id: string; created_time?: string; properties: Record<string, any> };
 
 export function notionConfigured() {
   return Boolean(
@@ -167,7 +167,7 @@ function yesNo(s: unknown): boolean | null {
   if (typeof s !== "string") return null;
   const v = s.trim().toLowerCase();
   if (["yes", "y", "true", "1", "would take again"].includes(v)) return true;
-  if (["no", "n", "false", "0", "would not take again"].includes(v)) return false;
+  if (["no", "n", "false", "0", "maybe", "would not take again"].includes(v)) return false;
   return null;
 }
 
@@ -184,7 +184,11 @@ export function readDate(page: NotionPage, name: string): string | null {
 }
 
 export function readRelationIds(page: NotionPage, name: string): string[] {
-  const p = prop(page, name);
+  let p = prop(page, name);
+  if (!p || p.type !== "relation") {
+    // Fall back to the first relation property on the page.
+    p = Object.values(page.properties).find((v: Prop) => v?.type === "relation");
+  }
   if (!p || p.type !== "relation") return [];
   return (p.relation ?? []).map((r: Prop) => normalizeId(r.id));
 }
