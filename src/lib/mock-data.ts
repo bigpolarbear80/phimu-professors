@@ -1,4 +1,4 @@
-import type { Professor, Review, Update } from "./types";
+import type { Material, Professor, Review, Update } from "./types";
 
 /**
  * Sample data used when NOTION_TOKEN is not set (or USE_MOCK_DATA=true).
@@ -70,4 +70,13 @@ export const mockUpdates: Update[] = [
   { id: "u3", title: "Free tutoring at the Learning Commons", date: "2025-10-15", body: "Drop-in tutoring for ACCT, CHEM, MATH, and BIOL runs Sunday through Thursday, 4 to 9pm, second floor of the library. No appointment needed.", link: "https://example.edu/tutoring", category: "Resource", pinned: false },
   { id: "u4", title: "Last day to drop with a W: Oct 31", date: "2025-10-31", body: "After this date a drop shows as a WF. If you are on the fence about a class, talk to your advisor this week.", link: "", category: "Important Date", pinned: false },
   { id: "u5", title: "Study room reservations", date: "2025-10-08", body: "The chapter study room can be reserved in two-hour blocks through the Notion calendar. Finals week priority goes to seniors.", link: "https://example.com/study-room", category: "Resource", pinned: false },
+];
+
+export const mockMaterials: Material[] = [
+  { id: "m1", title: "ACCT 201 syllabus, Fall 2025", course: "ACCT 201", professor: "Sarah Whitfield", subject: "Business", type: "Syllabus", description: "Current syllabus with the exam schedule and grading breakdown.", files: [{ name: "ACCT201-syllabus-F25.pdf", kind: "external", url: "https://example.com/acct201-syllabus.pdf" }], link: "", submittedAt: "2025-09-02" },
+  { id: "m2", title: "ACCT 201 exam 1 study guide", course: "ACCT 201", professor: "Sarah Whitfield", subject: "Business", type: "Study Guide", description: "Covers chapters 1 to 4. Made from her review session notes.", files: [{ name: "exam1-study-guide.pdf", kind: "external", url: "https://example.com/acct201-exam1.pdf" }], link: "", submittedAt: "2025-09-28" },
+  { id: "m3", title: "CHEM 101 lecture notes (full semester)", course: "CHEM 101", professor: "Priya Raman", subject: "Sciences", type: "Notes", description: "Typed notes from every lecture. Diagrams included.", files: [{ name: "CHEM101-notes.pdf", kind: "external", url: "https://example.com/chem101-notes.pdf" }], link: "", submittedAt: "2025-12-05" },
+  { id: "m4", title: "BIOL 101 practice test, unit 2", course: "BIOL 101", professor: "James Holloway", subject: "Sciences", type: "Practice Test", description: "Self-made practice questions in the format he uses.", files: [{ name: "biol101-unit2-practice.pdf", kind: "external", url: "https://example.com/biol101-practice.pdf" }], link: "", submittedAt: "2025-10-14" },
+  { id: "m5", title: "PSYC 101 syllabus", course: "PSYC 101", professor: "Angela Brooks", subject: "Liberal Arts", type: "Syllabus", description: "", files: [], link: "https://docs.google.com/document/d/example", submittedAt: "2025-08-25" },
+  { id: "m6", title: "MATH 120 homework solutions walkthrough", course: "MATH 120", professor: "Robert Lindqvist", subject: "General Studies", type: "Homework", description: "Worked solutions for homework sets 1 to 5 with explanations.", files: [{ name: "math120-hw1-5.pdf", kind: "external", url: "https://example.com/math120-hw.pdf" }], link: "", submittedAt: "2025-10-01" },
 ];

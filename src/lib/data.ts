@@ -1,11 +1,12 @@
 import { cacheLife } from "next/cache";
 import { notionSchema } from "./config";
-import { mockProfessors, mockReviews, mockUpdates } from "./mock-data";
+import { mockMaterials, mockProfessors, mockReviews, mockUpdates } from "./mock-data";
 import {
   normalizeId,
   queryAll,
   readBool,
   readDate,
+  readFiles,
   readList,
   readNumber,
   readRelationIds,
@@ -15,6 +16,7 @@ import {
   type NotionPage,
 } from "./notion";
 import type {
+  Material,
   Professor,
   ProfessorProfile,
   ProfessorStats,
@@ -132,6 +134,36 @@ async function loadUpdates(): Promise<Update[]> {
     });
 }
 
+async function loadMaterials(): Promise<Material[]> {
+  if (isMockMode()) return mockMaterials;
+  if (!process.env.NOTION_MATERIALS_DB) return [];
+  const s = notionSchema.materials;
+  let pages: NotionPage[];
+  try {
+    pages = await queryAll(process.env.NOTION_MATERIALS_DB, {
+      property: s.approved,
+      checkbox: { equals: true },
+    });
+  } catch (err) {
+    console.error("[notion] Material Bank unavailable:", (err as Error).message);
+    return [];
+  }
+  return pages
+    .map((page): Material => ({
+      id: normalizeId(page.id),
+      title: readText(page, s.title),
+      course: normalizeCourse(readText(page, s.course)),
+      professor: readText(page, s.professor).trim(),
+      subject: readText(page, s.subject),
+      type: readText(page, s.type),
+      description: readText(page, s.description),
+      files: readFiles(page, s.file),
+      link: readText(page, s.link),
+      submittedAt: page.created_time?.slice(0, 10) ?? null,
+    }))
+    .filter((m) => m.title && (m.files.length > 0 || m.link));
+}
+
 /* ---------- cached public API ------------------------------------------ */
 
 export async function getProfessors(): Promise<ProfessorWithStats[]> {
@@ -171,6 +203,24 @@ export async function getUpdates(): Promise<Update[]> {
   });
 }
 
+export async function getMaterials(): Promise<Material[]> {
+  "use cache";
+  cacheLife("minutes");
+  const materials = await loadMaterials();
+  return materials.sort((a, b) => (b.submittedAt ?? "").localeCompare(a.submittedAt ?? ""));
+}
+
+/** Materials that mention this professor by name, or one of the courses they teach. */
+export async function getMaterialsForProfessor(name: string, courses: string[]): Promise<Material[]> {
+  "use cache";
+  cacheLife("minutes");
+  const key = normName(name);
+  const courseSet = new Set(courses);
+  return (await getMaterials()).filter(
+    (m) => (m.professor && normName(m.professor) === key) || (m.course && courseSet.has(m.course)),
+  );
+}
+
 export async function getFilterOptions() {
   "use cache";
   cacheLife("minutes");
@@ -205,6 +255,9 @@ export function computeStats(reviews: Review[]): ProfessorStats {
   };
 }
 
+function normName(s: string) {
+  return s.toLowerCase().replace(/[^a-z]/g, "");
+}
 function round(n: number) {
   return Math.round(n * 10) / 10;
 }

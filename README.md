@@ -12,6 +12,7 @@ site reads them through the Notion API.
 | --- | --- | --- |
 | Directory | `/` | Search by professor name or course code (`ACCT 201`, `acct201`, `acct-201` all work). Filter by college and department. Sort by name, rating, review count. |
 | Professor profile | `/professors/[slug]` | Average rating, % would take again, average difficulty, review count, and every **approved** review. |
+| Material Bank | `/materials` | Shared syllabi, notes, study guides, practice tests. Search by course, professor, or title; browse by subject and type. Approved uploads only. See [docs/MATERIAL-BANK.md](docs/MATERIAL-BANK.md). |
 | Updates & Resources | `/updates` | Posts she writes in a Notion database: important dates, links, announcements. Pinned items float to the top. |
 | Login | `/login` | One shared password for the whole site. Session lasts 30 days. |
 

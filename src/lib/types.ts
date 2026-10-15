@@ -44,3 +44,23 @@ export type Update = {
   category: string;
   pinned: boolean;
 };
+
+export type MaterialFile = {
+  name: string;
+  /** "notion" files have expiring URLs and must go through /api/file; "external" links are stable. */
+  kind: "notion" | "external";
+  url: string;
+};
+
+export type Material = {
+  id: string;
+  title: string;
+  course: string;
+  professor: string;
+  subject: string;
+  type: string; // Syllabus, Notes, Study Guide, Practice Test, Homework, Other
+  description: string;
+  files: MaterialFile[];
+  link: string;
+  submittedAt: string | null;
+};

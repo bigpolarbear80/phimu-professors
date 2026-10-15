@@ -11,6 +11,8 @@ export const site = {
   logoPath: "/logo-small.png",
   /** Where she posts new reviews. Shown as a button on the directory page. */
   submitReviewUrl: process.env.NEXT_PUBLIC_SUBMIT_REVIEW_URL ?? "https://tally.so/r/WO6Z4e",
+  /** Tally form that feeds the Material Bank. Empty hides the button until her form exists. */
+  submitMaterialUrl: process.env.NEXT_PUBLIC_SUBMIT_MATERIAL_URL ?? "",
   /** Name of the login cookie. */
   sessionCookie: "pm_session",
   /** How long a login lasts, in seconds (30 days). */
@@ -58,5 +60,16 @@ export const notionSchema = {
     category: "Category",         // select (optional, e.g. "Important Date", "Resource")
     pinned: "Pinned",             // checkbox (optional)
     published: "Published",       // checkbox (optional; if the column exists, only checked rows show)
+  },
+  materials: {
+    title: "Name",                // title (e.g. "ACCT 201 Fall 2025 syllabus")
+    course: "Course",             // rich_text, e.g. "ACCT 201"
+    professor: "Professor",       // rich_text, professor's name as typed on the form
+    subject: "Subject",           // select (Business, Sciences, ...)
+    type: "Type",                 // select (Syllabus, Notes, Study Guide, Practice Test, Homework, Other)
+    description: "Description",   // rich_text
+    file: "File",                 // files & media (uploaded through Tally)
+    link: "Link",                 // url (optional alternative to an upload)
+    approved: "Approved",         // checkbox gate, same as reviews
   },
 } as const;

@@ -5,7 +5,8 @@ import { Suspense } from "react";
 import { RatingStars } from "@/components/RatingStars";
 import { ReviewCard } from "@/components/ReviewCard";
 import { StatBlock } from "@/components/StatBlock";
-import { getProfessorBySlug, getProfessors } from "@/lib/data";
+import { MaterialCard } from "@/components/MaterialCard";
+import { getMaterialsForProfessor, getProfessorBySlug, getProfessors } from "@/lib/data";
 
 export async function generateStaticParams() {
   const professors = await getProfessors();
@@ -34,6 +35,7 @@ async function ProfessorDetail({ params }: { params: PageProps<"/professors/[slu
   const prof = await getProfessorBySlug(slug);
   if (!prof) notFound();
   const { stats } = prof;
+  const materials = await getMaterialsForProfessor(prof.name, prof.courses);
 
   return (
     <>
@@ -87,6 +89,20 @@ async function ProfessorDetail({ params }: { params: PageProps<"/professors/[slu
             <ReviewCard key={r.id} review={r} />
           ))}
         </div>
+      )}
+
+      {materials.length > 0 && (
+        <>
+          <div className="mt-8 flex items-baseline justify-between">
+            <h2 className="text-lg font-semibold text-rose-900">Materials</h2>
+            <Link href="/materials" className="text-sm text-rose-700 hover:underline">Material Bank →</Link>
+          </div>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            {materials.map((m) => (
+              <MaterialCard key={m.id} material={m} />
+            ))}
+          </div>
+        </>
       )}
     </>
   );

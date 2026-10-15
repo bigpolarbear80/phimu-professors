@@ -191,6 +191,23 @@ export function readDate(page: NotionPage, name: string): string | null {
   }
 }
 
+export function readFiles(page: NotionPage, name: string): { name: string; kind: "notion" | "external"; url: string }[] {
+  const p = prop(page, name);
+  if (!p || p.type !== "files") return [];
+  return (p.files ?? [])
+    .map((f: Prop) => {
+      if (f.type === "file") return { name: f.name ?? "file", kind: "notion" as const, url: f.file?.url ?? "" };
+      if (f.type === "external") return { name: f.name ?? "link", kind: "external" as const, url: f.external?.url ?? "" };
+      return null;
+    })
+    .filter((f: Prop) => f && f.url);
+}
+
+/** Fetch one page straight from Notion (no cache). Used to mint a fresh file URL on download. */
+export async function getPage(pageId: string): Promise<NotionPage> {
+  return notionFetch<NotionPage>(`/pages/${pageId}`);
+}
+
 export function readRelationIds(page: NotionPage, name: string): string[] {
   let p = prop(page, name);
   if (!p || p.type !== "relation") {
