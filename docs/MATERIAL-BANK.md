@@ -26,7 +26,12 @@ Only rows with **Approved** ticked appear on the site. Rows need a title plus a 
 **Still to do:** the "Phi Mu Academics website" connection needs access to this database
 (Material Bank page → ••• → Connections → add it). Until then the tab shows "Nothing here yet."
 
-## Tally form to create
+## Tally form
+
+Live at https://tally.so/r/2j8X5D ("Phi Mu Material Bank Form", built by her 2026-10-15). The site's
+"Add to the bank" button points there (`site.submitMaterialUrl` in `src/lib/config.ts`).
+
+Original spec it was built from:
 
 Title: **Phi Mu Material Bank**
 

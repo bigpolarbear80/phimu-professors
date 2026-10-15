@@ -12,7 +12,7 @@ export const site = {
   /** Where she posts new reviews. Shown as a button on the directory page. */
   submitReviewUrl: process.env.NEXT_PUBLIC_SUBMIT_REVIEW_URL ?? "https://tally.so/r/WO6Z4e",
   /** Tally form that feeds the Material Bank. Empty hides the button until her form exists. */
-  submitMaterialUrl: process.env.NEXT_PUBLIC_SUBMIT_MATERIAL_URL ?? "",
+  submitMaterialUrl: process.env.NEXT_PUBLIC_SUBMIT_MATERIAL_URL ?? "https://tally.so/r/2j8X5D",
   /** Name of the login cookie. */
   sessionCookie: "pm_session",
   /** How long a login lasts, in seconds (30 days). */
